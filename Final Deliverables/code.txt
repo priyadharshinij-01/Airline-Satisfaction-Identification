@@ -1,0 +1,128 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import StandardScaler
+from xgboost import XGBClassifier
+from sklearn.metrics import accuracy_score,mean_squared_error
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+
+
+---------------------------------------------------------------
+
+
+train_data = pd.read_csv("/content/drive/MyDrive/Airline_Pass_Satisfaction/train 2.csv")
+test_data = pd.read_csv("/content/drive/MyDrive/Airline_Pass_Satisfaction/test 2.csv")
+     
+-------------------------------------------------------------------------------------------
+
+
+train_data.head()
+-------------------------------
+
+test_data.head()
+---------------------
+
+train_data.shape
+------------------------
+
+test_data.shape
+-------------------------
+
+train_data.isnull().sum()
+--------------------------------
+
+
+test_data.isnull().sum()
+---------------------------------
+
+train_data.dropna(inplace=True)
+test_data.dropna(inplace =True)
+-----------------------------------
+
+train_data.isnull().sum()
+------------------------------------
+
+
+def drops(data):
+  data.drop({"Unnamed: 0","id"},axis=1,inplace=True)
+   data["Gender"] = data["Gender"].map({"Male":1,"Female":0})
+  data["Customer Type"] = data["Customer Type"].map({"Loyal Customer":1,"disloyal Customer":0})
+  data["Type of Travel"] = data["Type of Travel"].map({"Business travel":1,"Personal Travel":0})
+  data = pd.get_dummies(data,columns = ["Class"])
+ return data
+---------------------------------------------------------------------------------------------------
+
+train_data["Class"].value_counts()
+-------------------------------------
+
+data = drops(train_data)
+--------------------------
+
+data.head()
+-----------------
+
+
+data_test = drops(test_data)
+------------------------------
+
+
+data_test.head()
+
+-----------------------
+
+ytrain_target = data["satisfaction"]
+xtrain_feature = data.drop({"satisfaction"},axis=1)
+
+------------------------------------------------------
+
+xtrain_feature.head()
+-------------------------------
+
+
+ytest_target = data_test["satisfaction"]
+xtest_feature = data_test.drop({"satisfaction"},axis=1)
+-------------------------------------------------------
+
+xtest_feature.head()
+----------------------------
+
+ytrain_target.head()
+
+-------------------------------
+
+ytrain_target.value_counts()
+---------------------------------
+
+
+y_train = ytrain_target.map({"neutral or dissatisfied":0,"satisfied":1})
+y_test = ytest_target.map({"neutral or dissatisfied":0,"satisfied":1})
+---------------------------------------------------------------------------
+
+y_train.head()
+---------------------
+
+y_test.head()
+---------------
+
+
+sns.countplot(x="Online boarding",hue="satisfaction",data=train_data)
+------------------------------------------------------------------------
+
+sns.countplot(x="Customer Type",hue="satisfaction",data=train_data)
+
+----------------------------------------------------------------------
+
+rfc = RandomForestClassifier()
+rfc.fit(xtrain_feature,y_train)
+
+-----------------------------------
+pred = rfc.predict(xtest_feature)
+------------------------------------
+
+accuracy_score(y_test,pred)
+
+------------------------------
+
+
